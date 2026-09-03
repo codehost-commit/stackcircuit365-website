@@ -17,7 +17,7 @@ export default async function Home({ params }: { params: { projectId: string } }
   const latest = incidents[0];
 
   return (
-    <AppSurface path={`dashboard.stackcircuit.dev/p/${project.id}`} title={project.name} status={project.status}>
+    <AppSurface path={`stackcircuit.dev/dashboard/p/${project.id}`} title={project.name} status={project.status}>
       <div className="flex items-center gap-3 border-b border-black/10 bg-[#f3faf5] px-5 py-3">
         <span className="h-4 w-4 shrink-0 bg-signal" />
         <span className="font-mono text-[12px] text-ink">
@@ -43,7 +43,7 @@ export default async function Home({ params }: { params: { projectId: string } }
             {open.kind} · confidence {Math.round(open.confidence * 100)}%. StackCircuit365 held automation and is waiting on you.
           </p>
           <Link
-            href={`/p/${project.id}/incidents/${open.id}`}
+            href={`/dashboard/p/${project.id}/incidents/${open.id}`}
             className="mt-3 inline-block bg-ink px-4 py-2 font-mono text-[12px] uppercase tracking-widest text-paper"
           >
             Review incident →
@@ -73,7 +73,7 @@ export default async function Home({ params }: { params: { projectId: string } }
           {incidents.slice(0, 4).map((i) => (
             <Link
               key={i.id}
-              href={`/p/${project.id}/incidents/${i.id}`}
+              href={`/dashboard/p/${project.id}/incidents/${i.id}`}
               className="flex items-center justify-between border-b border-line2 px-3.5 py-2.5 last:border-0 hover:bg-paper"
             >
               <span className="flex items-center gap-2.5">

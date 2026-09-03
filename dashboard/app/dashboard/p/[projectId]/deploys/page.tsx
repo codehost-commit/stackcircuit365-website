@@ -11,7 +11,7 @@ export default async function Deploys({ params }: { params: { projectId: string 
   const deploys = await listDeploys(project.id);
 
   return (
-    <AppSurface path={`dashboard.stackcircuit.dev/p/${project.id}/deploys`} title={project.name} status={project.status}>
+    <AppSurface path={`stackcircuit.dev/dashboard/p/${project.id}/deploys`} title={project.name} status={project.status}>
       <div className="p-5">
         <div className="mb-3 font-mono text-[11px] uppercase tracking-wider text-muted">
           Production deployments

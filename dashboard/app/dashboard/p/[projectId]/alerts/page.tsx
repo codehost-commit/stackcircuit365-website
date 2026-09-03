@@ -12,7 +12,7 @@ export default async function Alerts({ params }: { params: { projectId: string }
   const alerts = await listAlerts(project.id);
 
   return (
-    <AppSurface path={`dashboard.stackcircuit.dev/p/${project.id}/alerts`} title={project.name} status={project.status}>
+    <AppSurface path={`stackcircuit.dev/dashboard/p/${project.id}/alerts`} title={project.name} status={project.status}>
       <div className="p-5">
         <div className="mb-3 font-mono text-[11px] uppercase tracking-wider text-muted">
           Alerts sent · email + Slack
@@ -28,7 +28,7 @@ export default async function Alerts({ params }: { params: { projectId: string }
               <span className="min-w-0 flex-1 truncate text-[13px] text-ink/85">{a.subject}</span>
               {a.incidentId ? (
                 <Link
-                  href={`/p/${project.id}/incidents/${a.incidentId}`}
+                  href={`/dashboard/p/${project.id}/incidents/${a.incidentId}`}
                   className="font-mono text-[11px] text-signal hover:underline"
                 >
                   {a.incidentId} →

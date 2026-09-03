@@ -20,7 +20,7 @@ export default function ConnectForm() {
       });
       const body = (await res.json()) as { ok: boolean; projectId?: string; error?: string };
       if (body.ok && body.projectId) {
-        router.push(`/p/${body.projectId}`);
+        router.push(`/dashboard/p/${body.projectId}`);
       } else {
         setState("error");
         setMsg(body.error ?? "That key was not recognized.");

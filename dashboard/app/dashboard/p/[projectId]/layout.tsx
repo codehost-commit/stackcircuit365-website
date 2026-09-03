@@ -13,9 +13,9 @@ export default async function ProjectLayout({
   params: { projectId: string };
 }) {
   const user = await getSessionUser();
-  if (!user) redirect("/login");
+  if (!user) redirect("/dashboard/login");
   const project = await getProject(user.id, params.projectId);
-  if (!project) redirect("/connect");
+  if (!project) redirect("/dashboard/connect");
 
   return (
     <div className="min-h-screen bg-paper">

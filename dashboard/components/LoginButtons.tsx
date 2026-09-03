@@ -9,7 +9,7 @@ export default function LoginButtons({ demo }: { demo: boolean }) {
     return (
       <button
         type="button"
-        onClick={() => router.push("/p/prj_demo")}
+        onClick={() => router.push("/dashboard/p/prj_demo")}
         className="w-full bg-ink px-5 py-3 font-mono text-[13px] uppercase tracking-widest text-paper"
       >
         Enter demo dashboard →
@@ -19,7 +19,7 @@ export default function LoginButtons({ demo }: { demo: boolean }) {
   return (
     <button
       type="button"
-      onClick={() => signIn("github", { callbackUrl: "/" })}
+      onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
       className="w-full bg-ink px-5 py-3 font-mono text-[13px] uppercase tracking-widest text-paper"
     >
       Sign in with GitHub

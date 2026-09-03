@@ -30,7 +30,7 @@ export default async function Policy({ params }: { params: { projectId: string }
   if (!project) return null;
 
   return (
-    <AppSurface path={`dashboard.stackcircuit.dev/p/${project.id}/policy`} title={project.name} status={project.status}>
+    <AppSurface path={`stackcircuit.dev/dashboard/p/${project.id}/policy`} title={project.name} status={project.status}>
       <div className="p-5">
         <div className="mb-3 font-mono text-[11px] uppercase tracking-wider text-muted">Recovery mode</div>
         <div className="grid gap-2 sm:grid-cols-2">

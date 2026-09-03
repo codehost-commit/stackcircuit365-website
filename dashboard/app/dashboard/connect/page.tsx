@@ -5,7 +5,7 @@ import ConnectForm from "@/components/ConnectForm";
 export const dynamic = "force-dynamic";
 
 export default function Connect() {
-  if (DEMO_MODE) redirect("/p/prj_demo");
+  if (DEMO_MODE) redirect("/dashboard/p/prj_demo");
   return (
     <div className="grid min-h-screen place-items-center bg-paper px-6">
       <div className="w-full max-w-md border border-line bg-white">

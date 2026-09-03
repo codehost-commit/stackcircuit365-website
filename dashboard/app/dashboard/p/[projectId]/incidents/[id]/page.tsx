@@ -28,13 +28,13 @@ export default async function IncidentDetail({
   return (
     <div>
       <Link
-        href={`/p/${project.id}/incidents`}
+        href={`/dashboard/p/${project.id}/incidents`}
         className="mb-3 inline-block font-mono text-[12px] text-muted hover:text-ink"
       >
         ← Incidents
       </Link>
       <AppSurface
-        path={`dashboard.stackcircuit.dev/p/${project.id}/incidents/${incident.id}`}
+        path={`stackcircuit.dev/dashboard/p/${project.id}/incidents/${incident.id}`}
         title={project.name}
         status={incident.status}
       >

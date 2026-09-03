@@ -8,3 +8,6 @@ out/
 next-env.d.ts
 *.tgz
 *.tar.gz
+_to_delete/
+_merge.tgz
+.env.local

@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { hasSmtp, DASHBOARD_URL } from "./config";
+import { hasSmtp, notificationsEnabled, DASHBOARD_URL } from "./config";
 import { signAction } from "./tokens";
 
 /**
@@ -19,6 +19,12 @@ function transport() {
 const FROM = process.env.MAIL_FROM ?? "StackCircuit365 <alerts@stackcircuit.dev>";
 
 export async function sendMail(to: string, subject: string, text: string, html?: string) {
+  // Master switch (SC_NOTIFY): when off, never send — nothing leaves the app.
+  if (!notificationsEnabled) {
+    // eslint-disable-next-line no-console
+    console.log(`[email:off SC_NOTIFY=0] would send to=${to} subject=${subject}`);
+    return;
+  }
   if (!hasSmtp) {
     // eslint-disable-next-line no-console
     console.log(`[email:demo] to=${to} subject=${subject}\n${text}`);

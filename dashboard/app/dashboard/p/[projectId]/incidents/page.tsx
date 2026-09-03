@@ -12,7 +12,7 @@ export default async function Incidents({ params }: { params: { projectId: strin
   const incidents = await listIncidents(project.id);
 
   return (
-    <AppSurface path={`dashboard.stackcircuit.dev/p/${project.id}/incidents`} title={project.name} status={project.status}>
+    <AppSurface path={`stackcircuit.dev/dashboard/p/${project.id}/incidents`} title={project.name} status={project.status}>
       <div className="p-5">
         <div className="mb-3 font-mono text-[11px] uppercase tracking-wider text-muted">
           Incidents · {incidents.length}
@@ -24,7 +24,7 @@ export default async function Incidents({ params }: { params: { projectId: strin
           {incidents.map((i) => (
             <Link
               key={i.id}
-              href={`/p/${project.id}/incidents/${i.id}`}
+              href={`/dashboard/p/${project.id}/incidents/${i.id}`}
               className="grid grid-cols-[8rem_1fr_7rem_6rem] items-center gap-3 border-b border-line2 px-3.5 py-3 last:border-0 hover:bg-paper"
             >
               <span className="font-mono text-[12px] text-ink">{i.id}</span>

@@ -20,7 +20,7 @@ export default function Sidebar({
   status: IssueStatus;
 }) {
   const pathname = usePathname();
-  const base = `/p/${projectId}`;
+  const base = `/dashboard/p/${projectId}`;
   const meta = STATUS_META[status];
 
   const isActive = (seg: string) => {

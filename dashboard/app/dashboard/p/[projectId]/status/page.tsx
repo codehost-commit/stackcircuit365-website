@@ -20,7 +20,7 @@ export default async function Status({ params }: { params: { projectId: string }
   ];
 
   return (
-    <AppSurface path={`dashboard.stackcircuit.dev/p/${project.id}/status`} title={project.name} status={project.status}>
+    <AppSurface path={`stackcircuit.dev/dashboard/p/${project.id}/status`} title={project.name} status={project.status}>
       <dl className="divide-y divide-black/[0.07] font-mono text-[13px]">
         {rows.map(([k, v]) => (
           <div key={k} className="grid grid-cols-[8rem_1fr] gap-3 px-5 py-3.5">
