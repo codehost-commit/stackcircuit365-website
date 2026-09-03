@@ -11,11 +11,12 @@ export const authOptions: NextAuthOptions = {
   providers: hasGitHubAuth
     ? [
         GitHubProvider({
-          // Trim to defend against a trailing space/newline in the env value,
-          // which makes GitHub reject the token exchange with the opaque
-          // "issuer must be configured on the issuer" error.
           clientId: (process.env.GITHUB_ID ?? "").trim(),
-          clientSecret: (process.env.GITHUB_SECRET ?? "").trim()
+          clientSecret: (process.env.GITHUB_SECRET ?? "").trim(),
+          // openid-client asserts an issuer during the callback; GitHub's OAuth
+          // (non-OIDC) config leaves it unset, which throws "issuer must be
+          // configured on the issuer". Set it explicitly to GitHub's host.
+          issuer: "https://github.com"
         })
       ]
     : [],
@@ -24,17 +25,31 @@ export const authOptions: NextAuthOptions = {
   debug: true,
   logger: {
     error(code, meta) {
-      // Print the real reason on ONE grep-able line: search logs for SCAUTHERR.
-      let detail = "";
+      // Print the real reason + call site on ONE grep-able JSON line (SCAUTHERR).
       try {
-        const anyMeta = meta as unknown as { error?: unknown; message?: string; providerId?: string };
-        const err = (anyMeta && (anyMeta.error ?? anyMeta)) as { name?: string; message?: string } | undefined;
-        detail = `name=${err?.name ?? ""} message=${err?.message ?? anyMeta?.message ?? ""} provider=${anyMeta?.providerId ?? ""}`;
-      } catch {
-        /* ignore */
+        const anyMeta = meta as unknown as {
+          error?: { name?: string; message?: string; error?: string; error_description?: string; stack?: string };
+          message?: string;
+          providerId?: string;
+        };
+        const err = anyMeta?.error ?? (anyMeta as { name?: string; message?: string; stack?: string });
+        // eslint-disable-next-line no-console
+        console.error(
+          "SCAUTHERR " +
+            JSON.stringify({
+              code: String(code),
+              name: err?.name,
+              message: err?.message ?? anyMeta?.message,
+              opError: (err as { error?: string })?.error,
+              opDesc: (err as { error_description?: string })?.error_description,
+              provider: anyMeta?.providerId,
+              stack: (err?.stack ?? "").split("\n").slice(0, 6).join(" | ")
+            })
+        );
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error("SCAUTHERR-logfail", e);
       }
-      // eslint-disable-next-line no-console
-      console.error(`SCAUTHERR code=${String(code)} ${detail}`);
     },
     warn() {
       /* silence */
