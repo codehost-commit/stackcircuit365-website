@@ -49,8 +49,11 @@ export const authOptions: NextAuthOptions = {
   providers: hasGitHubAuth
     ? [
         GitHubProvider({
-          clientId: process.env.GITHUB_ID!,
-          clientSecret: process.env.GITHUB_SECRET!
+          // Trim to defend against a trailing space/newline pasted into the
+          // env value, which makes GitHub reject the token exchange with the
+          // opaque "issuer must be configured on the issuer" error.
+          clientId: (process.env.GITHUB_ID ?? "").trim(),
+          clientSecret: (process.env.GITHUB_SECRET ?? "").trim()
         })
       ]
     : [],
