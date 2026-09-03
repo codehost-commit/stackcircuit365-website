@@ -1,6 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { hasGitHubAuth } from "./config";
+import { recordAuthError } from "./authDebug";
 
 /**
  * GitHub sign-in with JWT sessions (no DB adapter needed for auth — user
@@ -33,19 +34,18 @@ export const authOptions: NextAuthOptions = {
           providerId?: string;
         };
         const err = anyMeta?.error ?? (anyMeta as { name?: string; message?: string; stack?: string });
+        const rec = {
+          at: new Date().toISOString(),
+          code: String(code),
+          name: err?.name,
+          message: err?.message ?? anyMeta?.message,
+          opError: (err as { error?: string })?.error,
+          opDesc: (err as { error_description?: string })?.error_description,
+          stack: (err?.stack ?? "").split("\n").slice(0, 10).join(" | ")
+        };
+        recordAuthError(rec);
         // eslint-disable-next-line no-console
-        console.error(
-          "SCAUTHERR " +
-            JSON.stringify({
-              code: String(code),
-              name: err?.name,
-              message: err?.message ?? anyMeta?.message,
-              opError: (err as { error?: string })?.error,
-              opDesc: (err as { error_description?: string })?.error_description,
-              provider: anyMeta?.providerId,
-              stack: (err?.stack ?? "").split("\n").slice(0, 6).join(" | ")
-            })
-        );
+        console.error("SCAUTHERR " + JSON.stringify(rec));
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error("SCAUTHERR-logfail", e);
