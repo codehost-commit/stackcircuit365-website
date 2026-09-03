@@ -37,6 +37,12 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
+            <a
+              href="https://dashboard.stackcircuit.dev"
+              className="font-mono text-[13px] uppercase tracking-widest text-muted"
+            >
+              Dashboard
+            </a>
           </nav>
           <a
             href="https://www.npmjs.com/package/stackcircuit365"
@@ -76,6 +82,12 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
+            <a
+              href="https://dashboard.stackcircuit.dev"
+              className="block border-b border-line2 py-3.5 font-mono text-[13px] uppercase tracking-widest text-muted last:border-b-0"
+            >
+              Dashboard
+            </a>
           </div>
         </nav>
       ) : null}

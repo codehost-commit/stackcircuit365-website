@@ -1,0 +1,114 @@
+// StackCircuit365 hosted dashboard — data model.
+// Auth is JWT/GitHub (no auth tables needed); these are the domain tables.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id                String   @id @default(cuid())
+  name              String
+  productionUrl     String
+  healthEndpoint    String?
+  // Owner is the GitHub user id (string) from the JWT session.
+  ownerId           String
+  ownerLogin        String?
+  // Machine credential the self-hosted agent uses (bearer). Only the hash is stored.
+  keyHash           String   @unique
+  keyPrefix         String   // first chars, shown in UI to identify the key
+  recoveryMode      String   @default("observe")
+  status            String   @default("healthy")
+  liveDeploymentId  String?
+  knownGoodId       String?
+  paused            Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  lastSeenAt        DateTime?
+
+  incidents   Incident[]
+  deployments Deployment[]
+  alerts      Alert[]
+  actions     ApprovalAction[]
+  audit       AuditEntry[]
+
+  @@index([ownerId])
+}
+
+model Incident {
+  id                  String   @id
+  projectId           String
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  kind                String
+  severity            String
+  status              String
+  confidence          Float
+  suspectDeploymentId String?
+  suspectCommit       String?
+  rollbackTargetId    String?
+  action              String
+  timeline            Json
+  openedAt            DateTime @default(now())
+  closedAt            DateTime?
+
+  @@index([projectId, openedAt])
+}
+
+model Deployment {
+  id         String   @id
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  commit     String?
+  message    String?
+  state      String
+  target     String
+  knownGood  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([projectId, createdAt])
+}
+
+model Alert {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  channel    String
+  subject    String
+  incidentId String?
+  at         DateTime @default(now())
+
+  @@index([projectId, at])
+}
+
+// A decision a human made that the agent must execute (relay model: the cloud
+// never holds prod tokens; the agent polls, executes, and acks).
+model ApprovalAction {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  incidentId  String
+  kind        String   // "rollback" | "revert" | "pause" | "resume"
+  targetId    String?
+  status      String   @default("pending") // pending | executing | done | failed
+  requestedBy String
+  createdAt   DateTime @default(now())
+  ackedAt     DateTime?
+  result      String?
+
+  @@index([projectId, status])
+}
+
+model AuditEntry {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  actor      String   // github login, "agent", or "system"
+  action     String
+  detail     String?
+  at         DateTime @default(now())
+
+  @@index([projectId, at])
+}

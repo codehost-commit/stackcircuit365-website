@@ -226,12 +226,21 @@ export default function Legal() {
               </p>
             </Clause>
 
-            <Clause n="5.0" title="A hosted version, later">
+            <Clause n="5.0" title="The hosted dashboard (optional)">
               <p>
-                If a managed hosted instance is offered in the future, it will
-                carry its own clearly posted privacy terms and its own data
-                handling, and using it will be optional. This policy describes
-                the open-source software you run today.
+                The hosted dashboard at dashboard.stackcircuit.dev is an optional
+                control panel. If you connect a project to it, we store
+                non-secret metadata — deployment events, incident timelines,
+                health results, your alert email, and the recovery decisions you
+                make — so you can review and approve recovery from anywhere, and
+                so we can send your alert emails. You sign in with GitHub.
+              </p>
+              <p>
+                We never receive your Vercel or GitHub tokens. When you approve a
+                rollback, the dashboard records the decision and your own
+                self-hosted agent performs it — the credentials that can change
+                production stay on your infrastructure. Using the dashboard is
+                optional; the open-source agent runs without it.
               </p>
             </Clause>
 

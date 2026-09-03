@@ -90,10 +90,16 @@ export default function Home() {
                 Protect my app
               </Link>
               <a
+                href="https://dashboard.stackcircuit.dev"
+                className="border border-ink px-5 py-3 font-mono text-[13px] uppercase tracking-widest text-ink"
+              >
+                Open dashboard
+              </a>
+              <a
                 href="https://www.npmjs.com/package/stackcircuit365"
                 target="_blank"
                 rel="noreferrer"
-                className="border border-ink px-5 py-3 font-mono text-[13px] uppercase tracking-widest text-ink"
+                className="border border-line px-5 py-3 font-mono text-[13px] uppercase tracking-widest text-muted"
               >
                 View on npm
               </a>
