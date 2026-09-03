@@ -21,6 +21,28 @@ export const authOptions: NextAuthOptions = {
     : [],
   session: { strategy: "jwt" },
   secret: (process.env.NEXTAUTH_SECRET ?? "dev-only-insecure-secret").trim(),
+  debug: true,
+  logger: {
+    error(code, meta) {
+      // Print the real reason on ONE grep-able line: search logs for SCAUTHERR.
+      let detail = "";
+      try {
+        const anyMeta = meta as unknown as { error?: unknown; message?: string; providerId?: string };
+        const err = (anyMeta && (anyMeta.error ?? anyMeta)) as { name?: string; message?: string } | undefined;
+        detail = `name=${err?.name ?? ""} message=${err?.message ?? anyMeta?.message ?? ""} provider=${anyMeta?.providerId ?? ""}`;
+      } catch {
+        /* ignore */
+      }
+      // eslint-disable-next-line no-console
+      console.error(`SCAUTHERR code=${String(code)} ${detail}`);
+    },
+    warn() {
+      /* silence */
+    },
+    debug() {
+      /* silence */
+    }
+  },
   callbacks: {
     async jwt({ token, profile }) {
       if (profile && (profile as { id?: number | string }).id != null) {
