@@ -5,7 +5,7 @@
   "description": "StackCircuit365 \u2014 marketing site + hosted dashboard (one Next.js app)",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma db push --skip-generate && next build",
+    "build": "prisma generate && prisma db push --accept-data-loss --skip-generate && next build",
     "start": "next start",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
