@@ -14,12 +14,27 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   if (!hasDatabase) return NextResponse.json({ ok: false, error: "demo" }, { status: 503 });
   const key = bearer(req);
-  if (!key) return NextResponse.json({ ok: false, error: "missing key" }, { status: 401 });
-  const project = await projectForKey(key);
-  if (!project) return NextResponse.json({ ok: false, error: "invalid key" }, { status: 401 });
+  if (!key || key.length < 8) return NextResponse.json({ ok: false, error: "missing key" }, { status: 401 });
 
   const { prisma } = await import("@/lib/prisma");
+  const { hashKey } = await import("@/lib/agentAuth");
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
+
+  // Resolve the project by key, or register it (unclaimed) on first contact so
+  // the owner can later claim it in the dashboard. This is what makes a key
+  // "recognized": it exists because a real agent connected with it.
+  let project = await projectForKey(key);
+  if (!project) {
+    const bodyProject = (body.project as Record<string, unknown> | undefined) ?? {};
+    project = await prisma.project.create({
+      data: {
+        name: (bodyProject.name as string) ?? "New project",
+        productionUrl: (bodyProject.productionUrl as string) ?? "",
+        keyHash: hashKey(key),
+        keyPrefix: key.slice(0, 12)
+      }
+    });
+  }
 
   await prisma.project.update({
     where: { id: project.id },

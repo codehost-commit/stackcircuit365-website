@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getProject, listAlerts } from "@/lib/data";
 import { getSessionUser } from "@/lib/session";
-import { AppSurface, Chip } from "@/components/ui";
+import { Shell, Chip } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -12,16 +12,13 @@ export default async function Alerts({ params }: { params: { projectId: string }
   const alerts = await listAlerts(project.id);
 
   return (
-    <AppSurface path={`stackcircuit.dev/dashboard/p/${project.id}/alerts`} title={project.name} status={project.status}>
-      <div className="p-5">
-        <div className="mb-3 font-mono text-[11px] uppercase tracking-wider text-muted">
-          Alerts sent · email + Slack
-        </div>
-        <div className="border border-line">
+    <Shell title={project.name} subtitle="Alerts · email + Slack" status={project.status}>
+      {alerts.length ? (
+        <div className="border border-line bg-white">
           {alerts.map((a) => (
             <div
               key={a.id}
-              className="flex items-center gap-3 border-b border-line2 px-3.5 py-3 last:border-0"
+              className="flex items-center gap-3 border-b border-line2 px-4 py-3 last:border-0"
             >
               <span className="w-24 shrink-0 font-mono text-[11px] text-muted">{a.at}</span>
               <Chip tone={a.channel === "email" ? "muted" : "amber"}>{a.channel}</Chip>
@@ -37,7 +34,13 @@ export default async function Alerts({ params }: { params: { projectId: string }
             </div>
           ))}
         </div>
-      </div>
-    </AppSurface>
+      ) : (
+        <div className="border border-line bg-white px-4 py-10 text-center">
+          <p className="text-[13px] text-muted">
+            No alerts sent yet. When notifications are on, every alert is logged here.
+          </p>
+        </div>
+      )}
+    </Shell>
   );
 }

@@ -18,11 +18,9 @@ export default async function ProjectLayout({
   if (!project) redirect("/dashboard/connect");
 
   return (
-    <div className="min-h-screen bg-paper">
-      <div className="mx-auto flex max-w-6xl gap-0 px-0 sm:px-6 sm:py-8">
-        <Sidebar projectId={project.id} status={project.status} />
-        <main className="min-w-0 flex-1 bg-paper p-4 sm:p-6">{children}</main>
-      </div>
+    <div className="flex min-h-screen bg-paper">
+      <Sidebar projectId={project.id} status={project.status} userName={user.name} />
+      <main className="min-w-0 flex-1">{children}</main>
     </div>
   );
 }

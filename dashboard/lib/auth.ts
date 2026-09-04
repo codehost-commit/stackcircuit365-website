@@ -1,7 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import type { OAuthConfig } from "next-auth/providers/oauth";
 import { hasGitHubAuth } from "./config";
-import { saveDbg } from "./authDebug";
 
 const clientId = (process.env.GITHUB_ID ?? "").trim();
 const clientSecret = (process.env.GITHUB_SECRET ?? "").trim();
@@ -19,7 +18,8 @@ interface GitHubProfile {
 /**
  * GitHub OAuth done with plain HTTP for the token exchange and profile fetch,
  * bypassing openid-client (whose "issuer must be configured on the issuer"
- * assertion was breaking the callback). JWT sessions, no DB adapter.
+ * assertion broke the callback in this runtime). JWT sessions, no DB adapter —
+ * the user's identity is their GitHub id carried in the token.
  */
 const githubProvider = {
   id: "github",
@@ -33,7 +33,6 @@ const githubProvider = {
   },
   token: {
     url: "https://github.com/login/oauth/access_token",
-    // Exchange the code for a token ourselves.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async request(context: any) {
       const code: string = context?.params?.code ?? "";
@@ -52,13 +51,6 @@ const githubProvider = {
         body
       });
       const tokens = (await res.json()) as Record<string, unknown>;
-      await saveDbg({
-        step: "token",
-        status: res.status,
-        hasAccessToken: Boolean(tokens.access_token),
-        error: tokens.error,
-        error_description: tokens.error_description
-      });
       return { tokens };
     }
   },
@@ -94,7 +86,6 @@ const githubProvider = {
           /* email is optional */
         }
       }
-      await saveDbg({ step: "userinfo", status: res.status, login: profile.login, id: profile.id });
       return profile;
     }
   },
@@ -104,7 +95,6 @@ const githubProvider = {
       name: profile.name ?? profile.login ?? "You",
       email: profile.email ?? null,
       image: profile.avatar_url ?? null,
-      // carried into the token via the jwt callback
       login: profile.login
     } as { id: string; name: string; email: string | null; image: string | null; login?: string };
   }
@@ -132,33 +122,6 @@ export const authOptions: NextAuthOptions = {
         (session.user as { login?: string }).login = token.ghLogin as string;
       }
       return session;
-    }
-  },
-  logger: {
-    async error(code, meta) {
-      try {
-        const anyMeta = meta as unknown as {
-          error?: { name?: string; message?: string; stack?: string };
-          message?: string;
-          providerId?: string;
-        };
-        const err = anyMeta?.error ?? (anyMeta as { name?: string; message?: string; stack?: string });
-        await saveDbg({
-          step: "logger.error",
-          code: String(code),
-          name: err?.name,
-          message: err?.message ?? anyMeta?.message,
-          stack: (err?.stack ?? "").split("\n").slice(0, 10).join(" | ")
-        });
-      } catch {
-        /* ignore */
-      }
-    },
-    warn() {
-      /* silence */
-    },
-    debug() {
-      /* silence */
     }
   },
   pages: { signIn: "/dashboard/login" }

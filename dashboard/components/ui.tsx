@@ -22,25 +22,9 @@ export function Chip({
 
 export function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="border border-black/10 bg-white px-5 py-4">
+    <div className="border border-line bg-white px-5 py-4">
       <div className="font-mono text-[28px] leading-none text-ink">{value}</div>
       <div className="mt-2 text-[11px] uppercase tracking-wider text-muted">{label}</div>
-    </div>
-  );
-}
-
-/** Browser window bar with square window controls + address (matches the mock). */
-export function WindowBar({ path }: { path: string }) {
-  return (
-    <div className="flex items-center gap-3 border-b border-black/10 bg-[#f1f0ec] px-3 py-2">
-      <span className="flex gap-1.5">
-        <span className="h-2.5 w-2.5 bg-[#e5534b]" />
-        <span className="h-2.5 w-2.5 bg-[#e3b341]" />
-        <span className="h-2.5 w-2.5 bg-[#3fb950]" />
-      </span>
-      <span className="flex-1 truncate border border-black/10 bg-white px-3 py-1 font-mono text-[12px] text-muted">
-        {path}
-      </span>
     </div>
   );
 }
@@ -58,27 +42,44 @@ export function StatusPill({ status }: { status: string }) {
   );
 }
 
-/** The white app surface with a window bar + header, matching the previews. */
-export function AppSurface({
-  path,
+/**
+ * A real page shell: a sticky header with the project name + a status pill, and
+ * a centered content column. No fake browser chrome — this is the app itself.
+ */
+export function Shell({
   title,
+  subtitle,
   status,
   children
 }: {
-  path: string;
   title: string;
-  status: string;
+  subtitle?: string;
+  status?: string;
   children: ReactNode;
 }) {
   return (
-    <div className="border border-line bg-white shadow-[0_18px_50px_-30px_rgba(0,0,0,0.35)]">
-      <WindowBar path={path} />
-      <div className="flex items-center justify-between border-b border-black/10 px-5 py-3">
-        <h1 className="font-mono text-[15px] text-ink">{title}</h1>
-        <StatusPill status={status} />
-      </div>
-      {children}
+    <div className="flex min-h-screen flex-col">
+      <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-line bg-white px-5 py-3.5 sm:px-8">
+        <div className="min-w-0">
+          <h1 className="truncate text-[17px] font-semibold tracking-tight text-ink">{title}</h1>
+          {subtitle ? (
+            <p className="mt-0.5 truncate font-mono text-[12px] text-muted">{subtitle}</p>
+          ) : null}
+        </div>
+        {status ? <StatusPill status={status} /> : null}
+      </header>
+      <div className="mx-auto w-full max-w-5xl flex-1 px-5 py-6 sm:px-8 sm:py-8">{children}</div>
     </div>
+  );
+}
+
+/** A titled section block used across pages. */
+export function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="mb-8 last:mb-0">
+      <h2 className="mb-3 font-mono text-[11px] uppercase tracking-widest text-muted">{title}</h2>
+      {children}
+    </section>
   );
 }
 

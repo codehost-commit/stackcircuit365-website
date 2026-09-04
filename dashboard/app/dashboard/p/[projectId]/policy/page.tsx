@@ -1,6 +1,6 @@
 import { getProject } from "@/lib/data";
 import { getSessionUser } from "@/lib/session";
-import { AppSurface, Chip } from "@/components/ui";
+import { Shell, Chip } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -30,44 +30,46 @@ export default async function Policy({ params }: { params: { projectId: string }
   if (!project) return null;
 
   return (
-    <AppSurface path={`stackcircuit.dev/dashboard/p/${project.id}/policy`} title={project.name} status={project.status}>
-      <div className="p-5">
-        <div className="mb-3 font-mono text-[11px] uppercase tracking-wider text-muted">Recovery mode</div>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {MODES.map((m) => {
-            const active = m.key === project.recoveryMode;
-            return (
-              <div
-                key={m.key}
-                className={`border p-4 ${active ? "border-signal bg-[#f3faf5]" : "border-line bg-white"}`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[13px] uppercase tracking-wider text-ink">{m.label}</span>
-                  {active ? <Chip tone="green">active</Chip> : <span className="font-mono text-[10px] text-muted">select</span>}
-                </div>
-                <p className="mt-2 text-[12.5px] leading-relaxed text-muted">{m.desc}</p>
+    <Shell title={project.name} subtitle="Recovery policy" status={project.status}>
+      <h2 className="mb-3 font-mono text-[11px] uppercase tracking-widest text-muted">Recovery mode</h2>
+      <div className="mb-8 grid gap-3 sm:grid-cols-2">
+        {MODES.map((m) => {
+          const active = m.key === project.recoveryMode;
+          return (
+            <div
+              key={m.key}
+              className={`border p-4 ${active ? "border-signal bg-[#f3faf5]" : "border-line bg-white"}`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[13px] uppercase tracking-wider text-ink">{m.label}</span>
+                {active ? (
+                  <Chip tone="green">active</Chip>
+                ) : (
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-muted">available</span>
+                )}
               </div>
-            );
-          })}
-        </div>
-
-        <div className="mt-6 mb-2 font-mono text-[11px] uppercase tracking-wider text-muted">
-          Auto-rollback safety gates
-        </div>
-        <div className="border border-line">
-          {GATES.map((g, i) => (
-            <div key={g} className="flex items-center gap-3 border-b border-line2 px-3.5 py-2.5 last:border-0">
-              <span className="font-mono text-[11px] text-muted">{String(i + 1).padStart(2, "0")}</span>
-              <span className="flex-1 text-[13px] text-ink/85">{g}</span>
-              <span className="h-2 w-2 bg-signal" />
+              <p className="mt-2 text-[12.5px] leading-relaxed text-muted">{m.desc}</p>
             </div>
-          ))}
-        </div>
-        <p className="mt-3 font-mono text-[11px] leading-relaxed text-muted">
-          High-risk changes (migrations, auth, billing, secrets) and dependency outages always stop
-          automation and ask a human — in every mode.
-        </p>
+          );
+        })}
       </div>
-    </AppSurface>
+
+      <h2 className="mb-3 font-mono text-[11px] uppercase tracking-widest text-muted">
+        Auto-rollback safety gates
+      </h2>
+      <div className="border border-line bg-white">
+        {GATES.map((g, i) => (
+          <div key={g} className="flex items-center gap-3 border-b border-line2 px-4 py-3 last:border-0">
+            <span className="font-mono text-[11px] text-muted">{String(i + 1).padStart(2, "0")}</span>
+            <span className="flex-1 text-[13px] text-ink/85">{g}</span>
+            <span className="h-2 w-2 bg-signal" />
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 font-mono text-[11px] leading-relaxed text-muted">
+        High-risk changes (migrations, auth, billing, secrets) and dependency outages always stop
+        automation and ask a human — in every mode.
+      </p>
+    </Shell>
   );
 }

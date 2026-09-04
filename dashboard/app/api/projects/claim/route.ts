@@ -27,28 +27,32 @@ export async function POST(req: Request) {
   const keyHash = hashKey(key);
   const existing = await prisma.project.findUnique({ where: { keyHash } });
 
-  if (existing) {
-    if (existing.ownerId && existing.ownerId !== user.id) {
-      return NextResponse.json({ ok: false, error: "That project is owned by another account." }, { status: 409 });
-    }
-    if (!existing.ownerId || existing.ownerId !== user.id) {
-      await prisma.project.update({
-        where: { id: existing.id },
-        data: { ownerId: user.id, ownerLogin: user.login ?? null }
-      });
-    }
-    return NextResponse.json({ ok: true, projectId: existing.id });
+  // Only a key an actual agent has registered (by connecting to the cloud) can
+  // be claimed. A made-up key matches nothing and is rejected — we never create
+  // a project from an unrecognized key.
+  if (!existing) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          "That key isn't recognized. Start your StackCircuit365 agent first (it prints and registers the key), then paste it here."
+      },
+      { status: 404 }
+    );
   }
 
-  const project = await prisma.project.create({
-    data: {
-      name: "New project",
-      productionUrl: "",
-      ownerId: user.id,
-      ownerLogin: user.login ?? null,
-      keyHash,
-      keyPrefix: key.slice(0, 12)
-    }
-  });
-  return NextResponse.json({ ok: true, projectId: project.id });
+  if (existing.ownerId && existing.ownerId !== user.id) {
+    return NextResponse.json(
+      { ok: false, error: "That project is already linked to another account." },
+      { status: 409 }
+    );
+  }
+
+  if (!existing.ownerId) {
+    await prisma.project.update({
+      where: { id: existing.id },
+      data: { ownerId: user.id, ownerLogin: user.login ?? null }
+    });
+  }
+  return NextResponse.json({ ok: true, projectId: existing.id });
 }
